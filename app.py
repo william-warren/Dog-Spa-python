@@ -3,8 +3,8 @@ from datetime import datetime
 
 # Import modules here!
 
-SERVICES_FILENAME = "./dog_spa/services.json"
-TRANSACTIONS_FILENAME = "./dog_spa/transactions.txt"
+SERVICES_FILENAME = "services.json"
+TRANSACTIONS_FILENAME = "transactions.txt"
 
 
 def print_welcome_message():
@@ -23,71 +23,42 @@ def print_welcome_message():
 def load_services():
     with open(SERVICES_FILENAME) as reference:
         services = load(reference)
-    bath_name = services["services"]["bath"]["name"]
-    bath_price = services["services"]["bath"]["price"]
-    massage_name = services["services"]["massage"]["name"]
-    massage_price = services["services"]["massage"]["price"]
-    walk_name = services["services"]["walk"]["name"]
-    walk_price = services["services"]["walk"]["price"]
-    play_name = services["services"]["play"]["name"]
-    play_price = services["services"]["play"]["price"]
-
-    bath = f"Service: {bath_name}, Price: {bath_price}"
-    massage = f"Service: {massage_name}, Price: {massage_price}"
-    walk = f"Service: {walk_name}, Price: {walk_price}"
-    play = f"Service: {play_name}, Price: {play_price}"
-    print(bath, "\n", massage, "\n", walk, "\n", play)
+        service_list = services["services"]
+    for service in service_list:
+        name = service_list[f"{service}"]["name"]
+        price = service_list[f"{service}"]["price"]
+        option = {f"{service}": {"name": f"{name}", "price": f"{price}"}}
+        print(f"{name} ~ ${price}")
 
 
 def select_service():
     while True:
-        selection = input(
-            "Which service would you like to purchase? [bath, massage, walk, or play] "
-        )
-        if selection == "bath":
-            print(">>>Bath")
-            print("Thats a great choice, your total is $25")
-            print("Thank you for your service!")
-            return "bath"
-        elif selection == "massage":
-            print(">>>Massage")
-            print("Thats a great choice, your total is $15")
-            print("Thank you for your service!")
-            return "massage"
-        elif selection == "walk":
-            print(">>>Walk")
-            print("Thats a great choice, your total is $10")
-            print("Thank you for your service!")
-            return "walk"
-        elif selection == "play":
-            print(">>>Play")
-            print("Thats a great choice, your total is $20")
-            print("Thank you for your service!")
-            return "play"
-        else:
-            print("Please enter a valid option")
+        selection = input("Which service would you like to purchase?")
+        with open(SERVICES_FILENAME) as reference:
+            services = load(reference)
+            service_list = services["services"]
+        for service in service_list:
+            if selection.strip().lower() == service_list[f"{service}"]["name"]:
+                name = service_list[f"{service}"]["name"]
+                price = service_list[f"{service}"]["price"]
+                message = f">>>{name.capitalize()}\nWhat a great choice!\nYou're total will be ${price}"
+                print(message)
+                result = selection.lower().strip()
+                return result
+        print("Please choose a valid option.")
 
 
 def get_log(choice):
     with open(SERVICES_FILENAME) as reference:
         services = load(reference)
+    service_list = services["services"]
     now = datetime.now()
-    if choice == "bath":
-        bath_name = services["services"]["bath"]["name"]
-        bath_price = services["services"]["bath"]["price"]
-        return f"\n{now}, {bath_name}, {bath_price}"
-    elif choice == "massage":
-        massage_name = services["services"]["massage"]["name"]
-        massage_price = services["services"]["massage"]["price"]
-        return f"\n{now}, {massage_name}, {massage_price}"
-    elif choice == "walk":
-        walk_name = services["services"]["walk"]["name"]
-        walk_price = services["services"]["walk"]["price"]
-        return f"\n{now}, {walk_name}, {walk_price}"
-    elif choice == "play":
-        play_name = services["services"]["play"]["name"]
-        play_price = services["services"]["play"]["price"]
-        return f"\n{now}, {play_name}, {play_price}"
+    for service in service_list:
+        if choice == service_list[f"{service}"]["name"]:
+            name = service_list[f"{service}"]["name"]
+            price = service_list[f"{service}"]["price"]
+            return f"\n{now}, {name}, {price}"
+
 
 def log_data(log):
     with open(TRANSACTIONS_FILENAME, "a") as log_file:
